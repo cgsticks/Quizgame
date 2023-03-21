@@ -37,7 +37,7 @@ game_over = False
 
 # Define the function for drawing text
 def draw_text(text, font, color, surface, x, y):
-    text_obj = font.render(text, True, color)
+    text_obj = font.render(text, False, color)
     text_rect = text_obj.get_rect()
     text_rect.center = (x, y)
     surface.blit(text_obj, text_rect)
@@ -51,20 +51,30 @@ def display_question(question, answers):
     random.shuffle(answers)
 
     # Display the question
-    draw_text(question, font, black, win, width//2, height//2 - 100)
+    draw_text(question, font, black, win, width // 2, height // 2 - 100)
 
     # Display the answers
     for i in range(len(answers)):
-        draw_text(str(i+1) + ". " + answers[i], font, black, win, width//2, height//2 - 50 + i*50)
+        draw_text(str(i + 1) + ". " + answers[i], font, black, win, width // 2, height // 2 - 50 + i * 50)
 
     # Check for the user's answer
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            if event.unicode.isdigit():
-                user_answer = answers[int(event.unicode)-1]
-                if user_answer == answers[0]:
-                    score += 1
-                game_over = True
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.unicode.isdigit():
+                    user_answer = answers[int(event.unicode) - 1]
+                    if user_answer == answers[0]:
+                        score += 1
+                    return  # exit the function and wait for the next question
+
+        # check if the timer is up
+        if timer == 0:
+            game_over = True
+            return  # exit the function and end the game loop
+
+        # update the screen
+        pygame.display.update()
+        clock.tick(60)
 
 # Start the game loop
 while not game_over:
